@@ -3,7 +3,8 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  sendEmailVerification
 } from "firebase/auth";
 import { auth } from "../firebase/config";
 
@@ -15,17 +16,32 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Registrar un nuevo usuario
-  const signup = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+  // Registrar un nuevo usuario y enviarle correo
+  const signup = async (email, password) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCredential.user);
+    return userCredential;
   };
 
-  // Iniciar sesión
+  // Recargar el estado del usuario para comprobar si ya verificó
+  const checkEmailVerification = async () => {
+    if (auth.currentUser) {
+      await auth.currentUser.reload();
+      setUser({ ...auth.currentUser }); // Forzar actualización en React
+    }
+  };
+
+  // Reenviar correo
+  const resendVerification = async () => {
+    if (auth.currentUser) {
+      await sendEmailVerification(auth.currentUser);
+    }
+  };
+
   const login = (email, password) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // Cerrar sesión
   const logout = () => {
     return signOut(auth);
   };
@@ -39,7 +55,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, signup, login, logout }}>
+    <AuthContext.Provider value={{ user, signup, login, logout, resendVerification, checkEmailVerification }}>
       {!loading && children}
     </AuthContext.Provider>
   );
