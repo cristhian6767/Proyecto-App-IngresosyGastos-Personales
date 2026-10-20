@@ -5,8 +5,9 @@ import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import Sidebar from "./components/Sidebar";
 
-// 1. Importar el nuevo componente Accounts
+// Importación de módulos creados
 import Accounts from "./components/Accounts";
+import Categories from "./components/Categories";
 
 import { getTransactions } from "./firebase/services";
 
@@ -62,7 +63,7 @@ export default function App() {
           </div>
         </header>
 
-        {/* VISTA 1: Inicio (Transacciones y resumen) */}
+        {/* VISTAS SEGÚN LA PESTAÑA SELECCIONADA */}
         {currentTab === "inicio" && (
           <>
             <BalanceSummary transactions={transactions} />
@@ -77,14 +78,17 @@ export default function App() {
           </>
         )}
 
-        {/* VISTA 2: Cuentas */}
         {currentTab === "cuentas" && <Accounts balance={totalBalance} />}
 
-        {/* VISTA 3: Gráficos */}
         {currentTab === "graficos" && <CategoryChart transactions={transactions} />}
 
-        {/* Vistas restantes temporalmente mientras las creamos una a una */}
-        {currentTab !== "inicio" && currentTab !== "cuentas" && currentTab !== "graficos" && (
+        {currentTab === "categorias" && <Categories />}
+
+        {/* Módulos pendientes por crear */}
+        {currentTab !== "inicio" && 
+         currentTab !== "cuentas" && 
+         currentTab !== "graficos" && 
+         currentTab !== "categorias" && (
           <div className="card" style={{ textAlign: "center", padding: "40px" }}>
             <h2>Sección de {currentTab.toUpperCase()}</h2>
             <p style={{ color: "#6b7280", marginTop: "8px" }}>Módulo en desarrollo...</p>
