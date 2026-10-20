@@ -5,11 +5,12 @@ import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import Sidebar from "./components/Sidebar";
 
-// Importación de módulos
+// Importación de todos los módulos del menú lateral
 import Accounts from "./components/Accounts";
 import Categories from "./components/Categories";
 import RecurringPayments from "./components/RecurringPayments";
 import Reminders from "./components/Reminders";
+import Settings from "./components/Settings";
 
 import { getTransactions } from "./firebase/services";
 
@@ -90,18 +91,7 @@ export default function App() {
 
         {currentTab === "recordatorios" && <Reminders />}
 
-        {/* Módulo restante (Ajustes) */}
-        {currentTab !== "inicio" && 
-         currentTab !== "cuentas" && 
-         currentTab !== "graficos" && 
-         currentTab !== "categorias" && 
-         currentTab !== "pagos" && 
-         currentTab !== "recordatorios" && (
-          <div className="card" style={{ textAlign: "center", padding: "40px" }}>
-            <h2>Sección de {currentTab.toUpperCase()}</h2>
-            <p style={{ color: "#6b7280", marginTop: "8px" }}>Módulo en desarrollo...</p>
-          </div>
-        )}
+        {currentTab === "ajustes" && <Settings />}
       </div>
     </div>
   );
