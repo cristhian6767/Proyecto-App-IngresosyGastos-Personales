@@ -5,7 +5,7 @@ import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import Sidebar from "./components/Sidebar";
 
-// Importación de todos los módulos del menú lateral
+// Importación de módulos
 import Accounts from "./components/Accounts";
 import Categories from "./components/Categories";
 import RecurringPayments from "./components/RecurringPayments";
@@ -20,7 +20,6 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("inicio");
 
-  // Usuario invitado fijo para la demo pública
   const GUEST_USER_ID = "invitado_demo";
 
   const fetchTransactions = async () => {
@@ -39,14 +38,12 @@ export default function App() {
     fetchTransactions();
   }, []);
 
-  // Calcular balance total
   const totalBalance = transactions.reduce((acc, curr) => {
     return curr.type === "income" ? acc + curr.amount : acc - curr.amount;
   }, 0);
 
   return (
     <div className="app-layout">
-      {/* Menú Lateral */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -56,7 +53,6 @@ export default function App() {
       />
 
       <div className="container">
-        {/* Encabezado Superior */}
         <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
@@ -66,7 +62,6 @@ export default function App() {
           </div>
         </header>
 
-        {/* VISTAS SEGÚN LA PESTAÑA SELECCIONADA */}
         {currentTab === "inicio" && (
           <>
             <BalanceSummary transactions={transactions} />
@@ -82,15 +77,10 @@ export default function App() {
         )}
 
         {currentTab === "cuentas" && <Accounts balance={totalBalance} />}
-
         {currentTab === "graficos" && <CategoryChart transactions={transactions} />}
-
         {currentTab === "categorias" && <Categories />}
-
         {currentTab === "pagos" && <RecurringPayments />}
-
         {currentTab === "recordatorios" && <Reminders />}
-
         {currentTab === "ajustes" && <Settings />}
       </div>
     </div>

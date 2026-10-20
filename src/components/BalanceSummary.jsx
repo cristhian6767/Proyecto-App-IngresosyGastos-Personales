@@ -1,37 +1,65 @@
-export default function BalanceSummary({ transactions }) {
-  // Calculamos los totales sumando los datos acumulados
-  const totals = transactions.reduce(
-    (acc, item) => {
-      if (item.type === "income") acc.income += item.amount;
-      if (item.type === "expense") acc.expense += item.amount;
-      return acc;
-    },
-    { income: 0, expense: 0 }
-  );
+import React from "react";
 
-  const balance = totals.income - totals.expense;
+export default function BalanceSummary({ transactions }) {
+  // Calcular Ingresos y Gastos
+  const totalIncome = transactions
+    .filter((t) => t.type === "income")
+    .reduce((acc, curr) => acc + curr.amount, 0);
+
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((acc, curr) => acc + curr.amount, 0);
+
+  const totalBalance = totalIncome - totalExpense;
+
+  // Formateador sin decimales y con puntos de miles (es-CO)
+  const formatMoney = (amount) => {
+    return new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   return (
-    <div className="summary-grid">
-      <div className="summary-card">
-        <p style={{ color: "#6b7280", fontSize: "14px" }}>Balance Total</p>
-        <h2 style={{ color: balance >= 0 ? "#2563eb" : "#ef4444", marginTop: "4px" }}>
-          ${balance.toFixed(2)}
-        </h2>
+    <div className="card">
+      {/* Balance Total */}
+      <div style={{ marginBottom: "16px" }}>
+        <span style={{ fontSize: "14px", color: "var(--text-secondary)", display: "block" }}>
+          Balance Total
+        </span>
+        <strong
+          style={{
+            fontSize: "28px",
+            color: totalBalance >= 0 ? "var(--accent-emerald)" : "var(--accent-rose)",
+            letterSpacing: "-0.5px",
+          }}
+        >
+          {formatMoney(totalBalance)}
+        </strong>
       </div>
 
-      <div className="summary-card">
-        <p style={{ color: "#6b7280", fontSize: "14px" }}>Total Ingresos</p>
-        <h2 className="text-income" style={{ marginTop: "4px" }}>
-          +${totals.income.toFixed(2)}
-        </h2>
-      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", paddingTop: "12px", borderTop: "1px solid var(--border-color)" }}>
+        {/* Total Ingresos */}
+        <div>
+          <span style={{ fontSize: "12px", color: "var(--text-secondary)", display: "block" }}>
+            Total Ingresos
+          </span>
+          <strong style={{ fontSize: "18px", color: "var(--accent-emerald)" }}>
+            +{formatMoney(totalIncome)}
+          </strong>
+        </div>
 
-      <div className="summary-card">
-        <p style={{ color: "#6b7280", fontSize: "14px" }}>Total Gastos</p>
-        <h2 className="text-expense" style={{ marginTop: "4px" }}>
-          -${totals.expense.toFixed(2)}
-        </h2>
+        {/* Total Gastos */}
+        <div>
+          <span style={{ fontSize: "12px", color: "var(--text-secondary)", display: "block" }}>
+            Total Gastos
+          </span>
+          <strong style={{ fontSize: "18px", color: "var(--text-primary)" }}>
+            -{formatMoney(totalExpense)}
+          </strong>
+        </div>
       </div>
     </div>
   );
