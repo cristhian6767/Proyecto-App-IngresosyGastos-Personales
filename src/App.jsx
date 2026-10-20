@@ -5,9 +5,10 @@ import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import Sidebar from "./components/Sidebar";
 
-// Importación de módulos creados
+// Importación de módulos
 import Accounts from "./components/Accounts";
 import Categories from "./components/Categories";
+import RecurringPayments from "./components/RecurringPayments";
 
 import { getTransactions } from "./firebase/services";
 
@@ -84,11 +85,14 @@ export default function App() {
 
         {currentTab === "categorias" && <Categories />}
 
+        {currentTab === "pagos" && <RecurringPayments />}
+
         {/* Módulos pendientes por crear */}
         {currentTab !== "inicio" && 
          currentTab !== "cuentas" && 
          currentTab !== "graficos" && 
-         currentTab !== "categorias" && (
+         currentTab !== "categorias" && 
+         currentTab !== "pagos" && (
           <div className="card" style={{ textAlign: "center", padding: "40px" }}>
             <h2>Sección de {currentTab.toUpperCase()}</h2>
             <p style={{ color: "#6b7280", marginTop: "8px" }}>Módulo en desarrollo...</p>
