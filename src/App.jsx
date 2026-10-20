@@ -4,6 +4,10 @@ import CategoryChart from "./components/CategoryChart";
 import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import Sidebar from "./components/Sidebar";
+
+// 1. Importar el nuevo componente Accounts
+import Accounts from "./components/Accounts";
+
 import { getTransactions } from "./firebase/services";
 
 export default function App() {
@@ -12,7 +16,7 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("inicio");
 
-  // Usuario invitado fijo sin autenticación
+  // Usuario invitado fijo para la demo pública
   const GUEST_USER_ID = "invitado_demo";
 
   const fetchTransactions = async () => {
@@ -38,7 +42,7 @@ export default function App() {
 
   return (
     <div className="app-layout">
-      {/* Menú Lateral (Sidebar) */}
+      {/* Menú Lateral */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -58,7 +62,7 @@ export default function App() {
           </div>
         </header>
 
-        {/* Vistas dinámicas */}
+        {/* VISTA 1: Inicio (Transacciones y resumen) */}
         {currentTab === "inicio" && (
           <>
             <BalanceSummary transactions={transactions} />
@@ -73,11 +77,14 @@ export default function App() {
           </>
         )}
 
-        {currentTab === "graficos" && (
-          <CategoryChart transactions={transactions} />
-        )}
+        {/* VISTA 2: Cuentas */}
+        {currentTab === "cuentas" && <Accounts balance={totalBalance} />}
 
-        {currentTab !== "inicio" && currentTab !== "graficos" && (
+        {/* VISTA 3: Gráficos */}
+        {currentTab === "graficos" && <CategoryChart transactions={transactions} />}
+
+        {/* Vistas restantes temporalmente mientras las creamos una a una */}
+        {currentTab !== "inicio" && currentTab !== "cuentas" && currentTab !== "graficos" && (
           <div className="card" style={{ textAlign: "center", padding: "40px" }}>
             <h2>Sección de {currentTab.toUpperCase()}</h2>
             <p style={{ color: "#6b7280", marginTop: "8px" }}>Módulo en desarrollo...</p>
