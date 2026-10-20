@@ -57,12 +57,12 @@ export default function App() {
 
       <div className="container">
         {/* Encabezado Superior */}
-        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
               ☰
             </button>
-            <h1 style={{ fontSize: "20px", margin: 0 }}>Gestor de Gastos</h1>
+            <h1 style={{ margin: 0 }}>Gestor de Gastos</h1>
           </div>
         </header>
 
@@ -72,7 +72,7 @@ export default function App() {
             <BalanceSummary transactions={transactions} />
             <TransactionForm userId={GUEST_USER_ID} onTransactionAdded={fetchTransactions} />
             {loading ? (
-              <div className="card" style={{ textAlign: "center", color: "#6b7280" }}>
+              <div className="card" style={{ textAlign: "center", color: "var(--text-secondary)" }}>
                 Cargando movimientos...
               </div>
             ) : (
