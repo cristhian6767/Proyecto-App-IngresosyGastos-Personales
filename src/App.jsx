@@ -5,7 +5,7 @@ import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import Sidebar from "./components/Sidebar";
 
-// Importación de módulos
+// Módulos
 import Accounts from "./components/Accounts";
 import Categories from "./components/Categories";
 import RecurringPayments from "./components/RecurringPayments";
@@ -44,6 +44,7 @@ export default function App() {
 
   return (
     <div className="app-layout">
+      {/* Barra Lateral siempre presente */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -52,7 +53,8 @@ export default function App() {
         balance={totalBalance}
       />
 
-      <div className="container">
+      {/* Contenido Principal */}
+      <main className="main-content">
         <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
@@ -82,7 +84,7 @@ export default function App() {
         {currentTab === "pagos" && <RecurringPayments />}
         {currentTab === "recordatorios" && <Reminders />}
         {currentTab === "ajustes" && <Settings />}
-      </div>
+      </main>
     </div>
   );
 }

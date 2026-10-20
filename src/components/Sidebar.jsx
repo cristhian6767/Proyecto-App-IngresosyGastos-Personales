@@ -1,63 +1,98 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar({ isOpen, onClose, currentTab, setCurrentTab, balance }) {
-  const { user, logout } = useAuth();
-
-  // Obtener la inicial del usuario o email
-  const initial = user?.email ? user.email.charAt(0).toUpperCase() : "U";
-  const displayName = user?.displayName || user?.email?.split("@")[0] || "Usuario";
-
-  // Formatear el balance a pesos colombianos
-  const formattedBalance = new Intl.NumberFormat("es-CO").format(balance || 0);
-
-  const menuItems = [
-    { id: "inicio", label: "Inicio", icon: "🔄" },
-    { id: "cuentas", label: "Cuentas", icon: "💰" },
-    { id: "graficos", label: "Gráficos", icon: "📊" },
-    { id: "categorias", label: "Categorías", icon: "📋" },
-    { id: "pagos", label: "Pagos habituales", icon: "💸" },
+  const navItems = [
+    { id: "inicio", label: "Inicio", icon: "📊" },
+    { id: "cuentas", label: "Cuentas", icon: "💳" },
+    { id: "graficos", label: "Gráficos", icon: "📈" },
+    { id: "categorias", label: "Categorías", icon: "🏷️" },
+    { id: "pagos", label: "Pagos Habituales", icon: "🔄" },
     { id: "recordatorios", label: "Recordatorios", icon: "🔔" },
     { id: "ajustes", label: "Ajustes", icon: "⚙️" },
   ];
 
+  const formatMoney = (amount) => {
+    return new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
   return (
     <>
-      {/* Fondo oscuro traslúcido para cerrar al hacer clic afuera */}
-      {isOpen && <div className="sidebar-overlay" onClick={onClose}></div>}
+      {/* Fondo oscuro al abrir menú en móviles */}
+      {isOpen && (
+        <div
+          onClick={onClose}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.6)",
+            zIndex: 40,
+          }}
+        />
+      )}
 
-      <aside className={`sidebar ${isOpen ? "open" : ""}`}>
-        {/* Cabecera del Usuario */}
-        <div className="sidebar-header">
-          <div className="avatar">{initial}</div>
-          <div className="user-info">
-            <h3>{displayName}</h3>
-            <p className="user-balance">Balance: {formattedBalance} COL$</p>
-          </div>
+      <aside
+        style={{
+          width: "260px",
+          backgroundColor: "var(--bg-sidebar)",
+          borderRight: "1px solid var(--border-color)",
+          display: "flex",
+          flexDirection: "column",
+          padding: "24px 16px",
+          minHeight: "100vh",
+          zIndex: 50,
+          /* Mostrar siempre en pantallas medianas/grandes, en móvil dependerá de isOpen */
+          position: window.innerWidth <= 768 ? "fixed" : "sticky",
+          top: 0,
+          left: 0,
+          transform: window.innerWidth <= 768 && !isOpen ? "translateX(-100%)" : "translateX(0)",
+          transition: "transform 0.3s ease",
+        }}
+      >
+        <div style={{ marginBottom: "32px", paddingLeft: "8px" }}>
+          <h2 style={{ fontSize: "18px", color: "var(--text-primary)", fontWeight: "700" }}>
+            FINANZAS DEMO
+          </h2>
+          <span style={{ fontSize: "12px", color: "var(--accent-emerald)", fontWeight: "600" }}>
+            Balance: {formatMoney(balance)}
+          </span>
         </div>
 
-        {/* Opciones del Menú */}
-        <nav className="sidebar-nav">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              className={`nav-item ${currentTab === item.id ? "active" : ""}`}
-              onClick={() => {
-                setCurrentTab(item.id);
-                onClose();
-              }}
-            >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-label">{item.label}</span>
-            </button>
-          ))}
-
-          <hr className="sidebar-divider" />
-
-          <button className="nav-item" onClick={logout}>
-            <span className="nav-icon">🚪</span>
-            <span className="nav-label">Cerrar Sesión</span>
-          </button>
+        <nav style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
+          {navItems.map((item) => {
+            const isActive = currentTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setCurrentTab(item.id);
+                  onClose();
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  padding: "12px 14px",
+                  borderRadius: "8px",
+                  border: "none",
+                  backgroundColor: isActive ? "var(--bg-card)" : "transparent",
+                  color: isActive ? "var(--accent-emerald)" : "var(--text-secondary)",
+                  fontWeight: isActive ? "600" : "400",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.2s ease",
+                  borderLeft: isActive ? "3px solid var(--accent-emerald)" : "3px solid transparent",
+                }}
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
       </aside>
     </>
