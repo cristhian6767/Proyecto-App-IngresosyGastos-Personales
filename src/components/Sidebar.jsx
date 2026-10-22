@@ -5,7 +5,6 @@ export default function Sidebar({ isOpen, onClose, currentTab, setCurrentTab, ba
     { id: "inicio", label: "Inicio", icon: "📊" },
     { id: "cuentas", label: "Cuentas", icon: "💳" },
     { id: "graficos", label: "Gráficos", icon: "📈" },
-    { id: "categorias", label: "Categorías", icon: "🏷️" },
     { id: "pagos", label: "Pagos Habituales", icon: "🔄" },
     { id: "recordatorios", label: "Recordatorios", icon: "🔔" },
     { id: "ajustes", label: "Ajustes", icon: "⚙️" },
