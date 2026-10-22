@@ -146,19 +146,25 @@ header h1 {
     padding: 16px;
   }
 }
-/* Color visible para el texto en las tarjetas de categorías */
+
+/* ==========================================================================
+   FIX VISIBILIDAD DE TARJETAS DE CATEGORÍAS
+   ========================================================================== */
+
+/* Fondo oscuro para la tarjeta interna de categoría */
 .category-card, 
-.card div[style*="background-color: var(--bg-input)"] {
-  background-color: #ffffff !important;
-  color: #1e293b !important; /* Texto oscuro visible */
+.card div[style*="background-color"] {
+  background-color: var(--bg-sidebar) !important;
+  border: 1px solid var(--border-color) !important;
 }
 
+/* Nombre de la categoría en blanco brillante */
 .category-card span, 
-div[style*="background-color: var(--bg-input)"] span {
-  color: #1e293b !important; /* Asegura que el nombre de la categoría sea negro/oscuro */
+div[style*="background-color"] span {
+  color: #ffffff !important;
 }
 
-/* El subtítulo (Gasto / Ingreso) se mantiene legible */
-div[style*="background-color: var(--bg-input)"] span:last-child {
-  color: #64748b !important;
+/* Subtítulo (Gasto / Ingreso) en gris claro visible */
+div[style*="background-color"] span:last-child {
+  color: var(--text-secondary) !important;
 }
