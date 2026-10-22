@@ -1,101 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Reminders() {
-  const [reminders, setReminders] = useState([
-    { id: 1, text: "Pagar factura de servicio eléctrico", date: "2026-10-25" },
-    { id: 2, text: "Revisar saldo de tarjeta de crédito", date: "2026-10-30" },
-  ]);
+  const DEFAULT_REMINDERS = [
+    { id: "1", title: "Revisión de gastos del mes", date: "Fin de mes" },
+  ];
 
-  const [text, setText] = useState("");
+  const [reminders, setReminders] = useState(() => {
+    const saved = localStorage.getItem("app_reminders");
+    return saved ? JSON.parse(saved) : DEFAULT_REMINDERS;
+  });
+
+  const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("app_reminders", JSON.stringify(reminders));
+  }, [reminders]);
 
   const handleAddReminder = (e) => {
     e.preventDefault();
-    if (!text || !date) return;
+    if (!title.trim()) return;
 
-    setReminders([...reminders, { id: Date.now(), text, date }]);
-    setText("");
+    const newReminder = {
+      id: Date.now().toString(),
+      title: title.trim(),
+      date: date.trim() || "Pendiente",
+    };
+
+    setReminders([...reminders, newReminder]);
+    setTitle("");
     setDate("");
   };
 
-  const handleDeleteReminder = (id) => {
-    setReminders(reminders.filter((r) => r.id !== id));
-  };
-
   return (
-    <div>
-      {/* Lista de Recordatorios */}
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card">
-        <h2 style={{ fontSize: "18px", marginBottom: "4px" }}>Recordatorios Financieros</h2>
-        <p style={{ color: "#6b7280", marginBottom: "16px", fontSize: "14px" }}>
-          Alertas de vencimientos y fechas clave.
+        <h2 style={{ fontSize: "18px", marginBottom: "4px" }}>🔔 Recordatorios</h2>
+        <p style={{ fontSize: "14px", marginBottom: "16px" }}>
+          Alertas e hitos financieros personales.
         </p>
 
-        {reminders.length === 0 ? (
-          <p style={{ color: "#9ca3af", textAlign: "center", padding: "12px 0" }}>
-            No tienes recordatorios pendientes.
-          </p>
-        ) : (
-          reminders.map((r) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {reminders.map((r) => (
             <div
               key={r.id}
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
                 padding: "12px",
-                backgroundColor: "#fffbe3",
-                borderLeft: "4px solid #f59e0b",
-                borderRadius: "6px",
-                marginBottom: "10px",
+                backgroundColor: "var(--bg-input)",
+                borderRadius: "8px",
+                borderLeft: "4px solid var(--accent-amber)",
               }}
             >
-              <div>
-                <strong style={{ fontSize: "14px", display: "block", color: "#92400e" }}>
-                  🔔 {r.text}
-                </strong>
-                <span style={{ fontSize: "12px", color: "#b45309" }}>
-                  Fecha límite: {r.date}
-                </span>
-              </div>
-              <button
-                onClick={() => handleDeleteReminder(r.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#ef4444",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                }}
-                title="Eliminar recordatorio"
-              >
-                ✕
-              </button>
+              <span style={{ fontWeight: "600", display: "block" }}>{r.title}</span>
+              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                Fecha límite: {r.date}
+              </span>
             </div>
-          ))
-        )}
+          ))}
+        </div>
       </div>
 
-      {/* Formulario para agregar recordatorio */}
       <div className="card">
-        <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>Nuevo Recordatorio</h3>
+        <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>Crear Recordatorio</h3>
         <form onSubmit={handleAddReminder}>
           <input
             type="text"
             className="input-field"
-            placeholder="Descripción (ej. Pagar Internet)"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
+            placeholder="Descripción del recordatorio"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
           />
           <input
-            type="date"
+            type="text"
             className="input-field"
+            placeholder="Fecha u hora objetivo"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
-          <button type="submit" className="btn btn-primary">
-            Crear Recordatorio
+          <button type="submit" className="btn btn-primary" style={{ marginTop: "8px" }}>
+            Guardar Recordatorio
           </button>
         </form>
       </div>
