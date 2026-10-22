@@ -146,9 +146,19 @@ header h1 {
     padding: 16px;
   }
 }
-/* Color de texto en negro para el selector de categorías */
-select.input-field,
-select.input-field option {
-  color: #000000 !important;
+/* Color visible para el texto en las tarjetas de categorías */
+.category-card, 
+.card div[style*="background-color: var(--bg-input)"] {
   background-color: #ffffff !important;
+  color: #1e293b !important; /* Texto oscuro visible */
+}
+
+.category-card span, 
+div[style*="background-color: var(--bg-input)"] span {
+  color: #1e293b !important; /* Asegura que el nombre de la categoría sea negro/oscuro */
+}
+
+/* El subtítulo (Gasto / Ingreso) se mantiene legible */
+div[style*="background-color: var(--bg-input)"] span:last-child {
+  color: #64748b !important;
 }
