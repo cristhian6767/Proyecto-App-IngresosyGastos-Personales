@@ -1,10 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Settings() {
   const [currency, setCurrency] = useState("COP");
-  const [theme, setTheme] = useState("dark");
+  
+  // Leer tema guardado o usar 'dark' por defecto
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("app_theme") || "dark";
+  });
+
   const [notifications, setNotifications] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(false);
+
+  // Cambiar las variables CSS en tiempo real al seleccionar un tema
+  useEffect(() => {
+    localStorage.setItem("app_theme", theme);
+    const root = document.documentElement;
+
+    if (theme === "midnight") {
+      // Midnight Blue (Azul Profundo)
+      root.style.setProperty("--bg-main", "#0f172a");
+      root.style.setProperty("--bg-sidebar", "#1e293b");
+      root.style.setProperty("--bg-card", "#1e293b");
+      root.style.setProperty("--bg-input", "#0f172a");
+      root.style.setProperty("--text-primary", "#f8fafc");
+      root.style.setProperty("--text-secondary", "#94a3b8");
+    } else if (theme === "light") {
+      // Light Minimalist (Claro Ejecutivo)
+      root.style.setProperty("--bg-main", "#f8fafc");
+      root.style.setProperty("--bg-sidebar", "#ffffff");
+      root.style.setProperty("--bg-card", "#ffffff");
+      root.style.setProperty("--bg-input", "#f1f5f9");
+      root.style.setProperty("--text-primary", "#0f172a");
+      root.style.setProperty("--text-secondary", "#64748b");
+    } else {
+      // Dark Emerald & Slate (Predeterminado)
+      root.style.setProperty("--bg-main", "#0b0f19");
+      root.style.setProperty("--bg-sidebar", "#111827");
+      root.style.setProperty("--bg-card", "#1f2937");
+      root.style.setProperty("--bg-input", "#111827");
+      root.style.setProperty("--text-primary", "#f9fafb");
+      root.style.setProperty("--text-secondary", "#9ca3af");
+    }
+  }, [theme]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -71,7 +108,7 @@ export default function Settings() {
             </select>
           </div>
 
-          {/* Tema Visual Desplegable */}
+          {/* Selector de Tema Visual interactivo */}
           <div>
             <label style={{ display: "block", fontSize: "13px", color: "var(--text-secondary)", marginBottom: "6px" }}>
               Tema Visual
