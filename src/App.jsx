@@ -14,22 +14,34 @@ import Settings from "./components/Settings";
 
 import { getTransactions } from "./firebase/services";
 
+// Categorías por defecto
+const DEFAULT_CATEGORIES = [
+  { id: "1", name: "Alimentación", icon: "🍔", type: "expense" },
+  { id: "2", name: "Transporte", icon: "🚌", type: "expense" },
+  { id: "3", name: "Vivienda", icon: "🏠", type: "expense" },
+  { id: "4", name: "Entretenimiento", icon: "🎬", type: "expense" },
+  { id: "5", name: "Salario", icon: "💼", type: "income" },
+  { id: "6", name: "Ventas / Negocio", icon: "📈", type: "income" },
+];
+
 export default function App() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("inicio");
 
-  const [categories, setCategories] = useState([
-    { id: "1", name: "Alimentación", icon: "🍔", type: "expense" },
-    { id: "2", name: "Transporte", icon: "🚌", type: "expense" },
-    { id: "3", name: "Vivienda", icon: "🏠", type: "expense" },
-    { id: "4", name: "Entretenimiento", icon: "🎬", type: "expense" },
-    { id: "5", name: "Salario", icon: "💼", type: "income" },
-    { id: "6", name: "Ventas / Negocio", icon: "📈", type: "income" },
-  ]);
+  // Cargar categorías desde localStorage o usar las predeterminadas
+  const [categories, setCategories] = useState(() => {
+    const savedCategories = localStorage.getItem("app_categories");
+    return savedCategories ? JSON.parse(savedCategories) : DEFAULT_CATEGORIES;
+  });
 
   const GUEST_USER_ID = "invitado_demo";
+
+  // Guardar en localStorage cada vez que cambien las categorías
+  useEffect(() => {
+    localStorage.setItem("app_categories", JSON.stringify(categories));
+  }, [categories]);
 
   const fetchTransactions = async () => {
     try {
