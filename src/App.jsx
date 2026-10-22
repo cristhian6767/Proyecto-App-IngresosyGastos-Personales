@@ -14,37 +14,14 @@ import Settings from "./components/Settings";
 
 import { getTransactions } from "./firebase/services";
 
-// Categorías por defecto
-const DEFAULT_CATEGORIES = [
-  { id: "1", name: "Alimentación", icon: "🍔", type: "expense" },
-  { id: "2", name: "Transporte", icon: "🚌", type: "expense" },
-  { id: "3", name: "Vivienda", icon: "🏠", type: "expense" },
-  { id: "4", name: "Entretenimiento", icon: "🎬", type: "expense" },
-  { id: "5", name: "Salario", icon: "💼", type: "income" },
-  { id: "6", name: "Ventas / Negocio", icon: "📈", type: "income" },
-];
-
 export default function App() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("inicio");
 
-  // ID fijo para la demo pública
   const GUEST_USER_ID = "invitado_demo";
 
-  // Cargar categorías desde localStorage o usar las predeterminadas
-  const [categories, setCategories] = useState(() => {
-    const savedCategories = localStorage.getItem("app_categories");
-    return savedCategories ? JSON.parse(savedCategories) : DEFAULT_CATEGORIES;
-  });
-
-  // Guardar en localStorage cada vez que cambien las categorías
-  useEffect(() => {
-    localStorage.setItem("app_categories", JSON.stringify(categories));
-  }, [categories]);
-
-  // Cargar transacciones desde Firebase Firestore
   const fetchTransactions = async () => {
     try {
       setLoading(true);
@@ -60,10 +37,6 @@ export default function App() {
   useEffect(() => {
     fetchTransactions();
   }, []);
-
-  const handleAddCategory = (newCat) => {
-    setCategories((prev) => [...prev, newCat]);
-  };
 
   const totalBalance = transactions.reduce((acc, curr) => {
     return curr.type === "income" ? acc + curr.amount : acc - curr.amount;
@@ -92,11 +65,7 @@ export default function App() {
         {currentTab === "inicio" && (
           <>
             <BalanceSummary transactions={transactions} />
-            <TransactionForm
-              userId={GUEST_USER_ID}
-              onTransactionAdded={fetchTransactions}
-              categories={categories}
-            />
+            <TransactionForm userId={GUEST_USER_ID} onTransactionAdded={fetchTransactions} />
             {loading ? (
               <div className="card" style={{ textAlign: "center", color: "var(--text-secondary)" }}>
                 Cargando movimientos...
@@ -109,9 +78,7 @@ export default function App() {
 
         {currentTab === "cuentas" && <Accounts balance={totalBalance} />}
         {currentTab === "graficos" && <CategoryChart transactions={transactions} />}
-        {currentTab === "categorias" && (
-          <Categories categories={categories} onAddCategory={handleAddCategory} />
-        )}
+        {currentTab === "categorias" && <Categories />}
         {currentTab === "pagos" && <RecurringPayments />}
         {currentTab === "recordatorios" && <Reminders />}
         {currentTab === "ajustes" && <Settings />}
