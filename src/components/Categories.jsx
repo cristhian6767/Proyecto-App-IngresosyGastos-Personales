@@ -1,28 +1,36 @@
 import React, { useState } from "react";
 
-export default function Categories({ categories, onAddCategory }) {
+export default function Categories() {
+  const [categories, setCategories] = useState([
+    { id: "1", name: "Alimentación", icon: "🍔", type: "expense" },
+    { id: "2", name: "Transporte", icon: "🚌", type: "expense" },
+    { id: "3", name: "Vivienda", icon: "🏠", type: "expense" },
+    { id: "4", name: "Entretenimiento", icon: "🎬", type: "expense" },
+    { id: "5", name: "Salario", icon: "💼", type: "income" },
+  ]);
+
   const [newCatName, setNewCatName] = useState("");
   const [newCatIcon, setNewCatIcon] = useState("🏷️");
   const [catType, setCatType] = useState("expense");
 
-  const handleSubmit = (e) => {
+  const handleAddCategory = (e) => {
     e.preventDefault();
     if (!newCatName.trim()) return;
 
-    onAddCategory({
+    const newCategory = {
       id: Date.now().toString(),
       name: newCatName.trim(),
       icon: newCatIcon.trim() || "🏷️",
       type: catType,
-    });
+    };
 
+    setCategories([...categories, newCategory]);
     setNewCatName("");
     setNewCatIcon("🏷️");
   };
 
   return (
     <div>
-      {/* Listado de Categorías */}
       <div className="card">
         <h2 style={{ fontSize: "18px", marginBottom: "4px" }}>Categorías Configuradas</h2>
         <p style={{ color: "var(--text-secondary)", marginBottom: "16px", fontSize: "14px" }}>
@@ -55,10 +63,9 @@ export default function Categories({ categories, onAddCategory }) {
         </div>
       </div>
 
-      {/* Formulario de nueva categoría */}
       <div className="card">
         <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>Crear Categoría Personalizada</h3>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleAddCategory}>
           <input
             type="text"
             className="input-field"
