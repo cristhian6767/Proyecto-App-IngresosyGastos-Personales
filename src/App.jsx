@@ -4,7 +4,6 @@ import CategoryChart from "./components/CategoryChart";
 import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import Sidebar from "./components/Sidebar";
-import Login from "./components/Login";
 
 // Módulos
 import Accounts from "./components/Accounts";
@@ -16,19 +15,26 @@ import Settings from "./components/Settings";
 import { getTransactions } from "./firebase/services";
 
 export default function App() {
-  const [user, setUser] = useState(null); // Guardará el usuario autenticado
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("inicio");
 
-  const userId = user ? user.userId : "invitado_demo";
+  const [categories, setCategories] = useState([
+    { id: "1", name: "Alimentación", icon: "🍔", type: "expense" },
+    { id: "2", name: "Transporte", icon: "🚌", type: "expense" },
+    { id: "3", name: "Vivienda", icon: "🏠", type: "expense" },
+    { id: "4", name: "Entretenimiento", icon: "🎬", type: "expense" },
+    { id: "5", name: "Salario", icon: "💼", type: "income" },
+    { id: "6", name: "Ventas / Negocio", icon: "📈", type: "income" },
+  ]);
+
+  const GUEST_USER_ID = "invitado_demo";
 
   const fetchTransactions = async () => {
-    if (!user) return;
     try {
       setLoading(true);
-      const data = await getTransactions(userId);
+      const data = await getTransactions(GUEST_USER_ID);
       setTransactions(data);
     } catch (error) {
       console.error("Error al cargar transacciones:", error);
@@ -38,33 +44,19 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (user) {
-      fetchTransactions();
-    }
-  }, [user]);
+    fetchTransactions();
+  }, []);
 
-  const handleLogin = (userData) => {
-    setUser(userData);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    setTransactions([]);
-    setCurrentTab("inicio");
+  const handleAddCategory = (newCat) => {
+    setCategories((prev) => [...prev, newCat]);
   };
 
   const totalBalance = transactions.reduce((acc, curr) => {
     return curr.type === "income" ? acc + curr.amount : acc - curr.amount;
   }, 0);
 
-  // Si no hay usuario logueado, se muestra únicamente la pantalla de Login
-  if (!user) {
-    return <Login onLogin={handleLogin} />;
-  }
-
   return (
     <div className="app-layout">
-      {/* Barra Lateral */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -73,7 +65,6 @@ export default function App() {
         balance={totalBalance}
       />
 
-      {/* Contenido Principal */}
       <main className="main-content">
         <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -82,31 +73,16 @@ export default function App() {
             </button>
             <h1 style={{ margin: 0 }}>Gestor de Gastos</h1>
           </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
-              {user.email}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="btn"
-              style={{
-                width: "auto",
-                padding: "6px 12px",
-                fontSize: "12px",
-                backgroundColor: "#374151",
-                color: "var(--text-primary)",
-              }}
-            >
-              Salir
-            </button>
-          </div>
         </header>
 
         {currentTab === "inicio" && (
           <>
             <BalanceSummary transactions={transactions} />
-            <TransactionForm userId={userId} onTransactionAdded={fetchTransactions} />
+            <TransactionForm
+              userId={GUEST_USER_ID}
+              onTransactionAdded={fetchTransactions}
+              categories={categories}
+            />
             {loading ? (
               <div className="card" style={{ textAlign: "center", color: "var(--text-secondary)" }}>
                 Cargando movimientos...
@@ -119,7 +95,9 @@ export default function App() {
 
         {currentTab === "cuentas" && <Accounts balance={totalBalance} />}
         {currentTab === "graficos" && <CategoryChart transactions={transactions} />}
-        {currentTab === "categorias" && <Categories />}
+        {currentTab === "categorias" && (
+          <Categories categories={categories} onAddCategory={handleAddCategory} />
+        )}
         {currentTab === "pagos" && <RecurringPayments />}
         {currentTab === "recordatorios" && <Reminders />}
         {currentTab === "ajustes" && <Settings />}
