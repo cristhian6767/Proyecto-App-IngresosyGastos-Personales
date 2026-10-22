@@ -43,12 +43,6 @@ export default function App() {
     return curr.type === "income" ? acc + curr.amount : acc - curr.amount;
   }, 0);
 
-  // Función de cierre de sesión simulada para la demo
-  const handleLogout = () => {
-    alert("Sesión finalizada");
-    window.location.reload();
-  };
-
   return (
     <div className="app-layout">
       <Sidebar
@@ -66,28 +60,6 @@ export default function App() {
               ☰
             </button>
             <h1 style={{ margin: 0 }}>Gestor de Gastos</h1>
-          </div>
-          
-          {/* Información de usuario y botón Salir restaurados */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>
-              cris@gmail.com
-            </span>
-            <button
-              onClick={handleLogout}
-              className="btn"
-              style={{
-                padding: "6px 14px",
-                fontSize: "13px",
-                backgroundColor: "var(--bg-card)",
-                color: "var(--text-primary)",
-                border: "1px solid var(--border-color)",
-                width: "auto",
-                cursor: "pointer",
-              }}
-            >
-              Salir
-            </button>
           </div>
         </header>
 
