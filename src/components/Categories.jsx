@@ -52,7 +52,7 @@ export default function Categories() {
               <span style={{ fontSize: "20px" }}>{cat.icon}</span>
               <div>
                 <span style={{ fontSize: "14px", fontWeight: "500", display: "block" }}>{cat.name}</span>
-                <span style={{ fontSize: "11px", color: "#6b7280" }}>
+                <span style={{ fontSize: "11px", color: "#1e293b" }}>
                   {cat.type === "income" ? "Ingreso" : "Gasto"}
                 </span>
               </div>
