@@ -1,96 +1,101 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { addTransaction } from "../firebase/services";
 
 export default function TransactionForm({ userId, onTransactionAdded }) {
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [type, setType] = useState("expense");
-  const [category, setCategory] = useState("Alimentación");
+  const [formData, setFormData] = useState({
+    type: "expense",
+    amount: "",
+    category: "Alimentación",
+    description: "",
+    date: new Date().toISOString().split("T")[0]
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!description || !amount) return;
+    if (!formData.amount || formData.amount <= 0) return;
 
-    const newTransaction = {
-      userId,
-      description,
-      amount: parseFloat(amount),
-      type,
-      category,
-      date: new Date().toISOString(),
-    };
+    await addTransaction(userId, formData);
+    
+    // Limpiamos los campos
+    setFormData({
+      type: "expense",
+      amount: "",
+      category: "Alimentación",
+      description: "",
+      date: new Date().toISOString().split("T")[0]
+    });
 
-    try {
-      await addTransaction(newTransaction);
-      setDescription("");
-      setAmount("");
-      onTransactionAdded();
-    } catch (error) {
-      console.error("Error al guardar transacción:", error);
-    }
+    if (onTransactionAdded) onTransactionAdded();
   };
 
   return (
     <div className="card">
-      <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>Registrar Movimiento</h3>
+      <h3 style={{ marginBottom: "16px" }}>Registrar Movimiento</h3>
       <form onSubmit={handleSubmit}>
+        
+        {/* Selector de Ingreso o Gasto */}
         <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
           <button
             type="button"
-            className={`btn ${type === "expense" ? "btn-primary" : "btn-inactive"}`}
-            style={{
-              backgroundColor: type === "expense" ? "var(--accent-rose)" : "#374151",
-              color: "white",
-            }}
-            onClick={() => setType("expense")}
-          >
-            Gasto
-          </button>
-          <button
-            type="button"
-            className={`btn ${type === "income" ? "btn-primary" : "btn-inactive"}`}
-            style={{
-              backgroundColor: type === "income" ? "var(--accent-emerald)" : "#374151",
-              color: type === "income" ? "#022c22" : "white",
-            }}
-            onClick={() => setType("income")}
+            className={`btn ${formData.type === "income" ? "btn-income" : "btn-inactive"}`}
+            style={{ flex: 1 }}
+            onClick={() => setFormData({ ...formData, type: "income" })}
           >
             Ingreso
           </button>
+          <button
+            type="button"
+            className={`btn ${formData.type === "expense" ? "btn-expense" : "btn-inactive"}`}
+            style={{ flex: 1 }}
+            onClick={() => setFormData({ ...formData, type: "expense" })}
+          >
+            Gasto
+          </button>
         </div>
 
-        <input
-          type="text"
-          className="input-field"
-          placeholder="Descripción (ej. Mercado, Transporte, Sueldo)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-
+        {/* Campo de Monto */}
         <input
           type="number"
-          className="input-field"
+          step="0.01"
           placeholder="Monto ($)"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          value={formData.amount}
+          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+          className="input-field"
           required
         />
 
+        {/* Categoría */}
         <select
+          value={formData.category}
+          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
           className="input-field"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
         >
-          <option value="Alimentación">🍔 Alimentación</option>
-          <option value="Transporte">🚌 Transporte</option>
-          <option value="Vivienda">🏠 Vivienda</option>
-          <option value="Entretenimiento">🎬 Entretenimiento</option>
-          <option value="Salario">💼 Salario</option>
-          <option value="Otros">📦 Otros</option>
+          <option value="Salario">Salario</option>
+          <option value="Alimentación">Alimentación</option>
+          <option value="Transporte">Transporte</option>
+          <option value="Servicios">Servicios</option>
+          <option value="Entretenimiento">Entretenimiento</option>
+          <option value="Otros">Otros</option>
         </select>
 
-        <button type="submit" className="btn btn-primary" style={{ marginTop: "8px" }}>
+        {/* Descripción */}
+        <input
+          type="text"
+          placeholder="Descripción (opcional)"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          className="input-field"
+        />
+
+        {/* Fecha */}
+        <input
+          type="date"
+          value={formData.date}
+          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+          className="input-field"
+        />
+
+        <button type="submit" className="btn btn-primary">
           Guardar Transacción
         </button>
       </form>
