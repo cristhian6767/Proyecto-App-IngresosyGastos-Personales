@@ -36,6 +36,11 @@ export default function RecurringPayments() {
     setDay("");
   };
 
+  // Función para borrar un pago
+  const handleDeletePayment = (id) => {
+    setPayments(payments.filter((p) => p.id !== id));
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card">
@@ -45,29 +50,48 @@ export default function RecurringPayments() {
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {payments.map((p) => (
-            <div
-              key={p.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "12px",
-                backgroundColor: "var(--bg-input)",
-                borderRadius: "8px",
-              }}
-            >
-              <div>
-                <span style={{ fontWeight: "600", display: "block" }}>{p.name}</span>
-                <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-                  Frecuencia: {p.day}
-                </span>
+          {payments.length === 0 ? (
+            <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>No hay pagos recurrentes registrados.</p>
+          ) : (
+            payments.map((p) => (
+              <div
+                key={p.id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "12px",
+                  backgroundColor: "var(--bg-input)",
+                  borderRadius: "8px",
+                }}
+              >
+                <div>
+                  <span style={{ fontWeight: "600", display: "block" }}>{p.name}</span>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                    Frecuencia: {p.day}
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <span style={{ fontWeight: "bold", color: "var(--accent-rose)" }}>
+                    ${p.amount.toLocaleString()}
+                  </span>
+                  <button
+                    onClick={() => handleDeletePayment(p.id)}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "var(--accent-rose)",
+                      cursor: "pointer",
+                      fontSize: "16px",
+                    }}
+                    title="Eliminar"
+                  >
+                    🗑️
+                  </button>
+                </div>
               </div>
-              <span style={{ fontWeight: "bold", color: "var(--accent-rose)" }}>
-                ${p.amount.toLocaleString()}
-              </span>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
