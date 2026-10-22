@@ -33,6 +33,10 @@ export default function Accounts({ balance = 0 }) {
     setName("");
   };
 
+  const handleDeleteAccount = (id) => {
+    setAccounts(accounts.filter((acc) => acc.id !== id));
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card">
@@ -46,18 +50,36 @@ export default function Accounts({ balance = 0 }) {
             <div
               key={acc.id}
               style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
                 padding: "16px",
                 backgroundColor: "var(--bg-input)",
                 borderRadius: "8px",
                 borderLeft: `5px solid ${acc.color}`,
               }}
             >
-              <span style={{ fontSize: "15px", fontWeight: "bold", display: "block" }}>
-                {acc.name}
-              </span>
-              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-                Tipo: {acc.type}
-              </span>
+              <div>
+                <span style={{ fontSize: "15px", fontWeight: "bold", display: "block" }}>
+                  {acc.name}
+                </span>
+                <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                  Tipo: {acc.type}
+                </span>
+              </div>
+              <button
+                onClick={() => handleDeleteAccount(acc.id)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--accent-rose)",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                }}
+                title="Eliminar cuenta"
+              >
+                🗑️
+              </button>
             </div>
           ))}
         </div>
