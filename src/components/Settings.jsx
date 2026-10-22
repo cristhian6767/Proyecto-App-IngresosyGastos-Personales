@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 export default function Settings() {
   const [currency, setCurrency] = useState("COP");
+  const [theme, setTheme] = useState("dark");
   const [notifications, setNotifications] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(false);
 
@@ -70,16 +71,20 @@ export default function Settings() {
             </select>
           </div>
 
+          {/* Tema Visual Desplegable */}
           <div>
             <label style={{ display: "block", fontSize: "13px", color: "var(--text-secondary)", marginBottom: "6px" }}>
               Tema Visual
             </label>
-            <input
-              type="text"
+            <select
               className="input-field"
-              value="Dark Emerald & Slate (Predeterminado)"
-              disabled
-            />
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+            >
+              <option value="dark">Dark Emerald & Slate (Predeterminado)</option>
+              <option value="midnight">Midnight Blue (Oscuro Profesional)</option>
+              <option value="light">Light Minimalist (Claro Ejecutivo)</option>
+            </select>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "8px" }}>
