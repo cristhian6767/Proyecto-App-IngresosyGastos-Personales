@@ -30,19 +30,21 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("inicio");
 
+  // ID fijo para la demo pública
+  const GUEST_USER_ID = "invitado_demo";
+
   // Cargar categorías desde localStorage o usar las predeterminadas
   const [categories, setCategories] = useState(() => {
     const savedCategories = localStorage.getItem("app_categories");
     return savedCategories ? JSON.parse(savedCategories) : DEFAULT_CATEGORIES;
   });
 
-  const GUEST_USER_ID = "invitado_demo";
-
   // Guardar en localStorage cada vez que cambien las categorías
   useEffect(() => {
     localStorage.setItem("app_categories", JSON.stringify(categories));
   }, [categories]);
 
+  // Cargar transacciones desde Firebase Firestore
   const fetchTransactions = async () => {
     try {
       setLoading(true);
