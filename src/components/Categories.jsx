@@ -1,27 +1,21 @@
 import React, { useState } from "react";
 
-export default function Categories() {
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Alimentación", icon: "🍔", type: "expense" },
-    { id: 2, name: "Transporte", icon: "🚌", type: "expense" },
-    { id: 3, name: "Vivienda", icon: "🏠", type: "expense" },
-    { id: 4, name: "Entretenimiento", icon: "🎬", type: "expense" },
-    { id: 5, name: "Salario", icon: "💼", type: "income" },
-    { id: 6, name: "Ventas / Negocio", icon: "📈", type: "income" },
-  ]);
-
+export default function Categories({ categories, onAddCategory }) {
   const [newCatName, setNewCatName] = useState("");
   const [newCatIcon, setNewCatIcon] = useState("🏷️");
   const [catType, setCatType] = useState("expense");
 
-  const handleAddCategory = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!newCatName) return;
+    if (!newCatName.trim()) return;
 
-    setCategories([
-      ...categories,
-      { id: Date.now(), name: newCatName, icon: newCatIcon, type: catType },
-    ]);
+    onAddCategory({
+      id: Date.now().toString(),
+      name: newCatName.trim(),
+      icon: newCatIcon.trim() || "🏷️",
+      type: catType,
+    });
+
     setNewCatName("");
     setNewCatIcon("🏷️");
   };
@@ -31,11 +25,11 @@ export default function Categories() {
       {/* Listado de Categorías */}
       <div className="card">
         <h2 style={{ fontSize: "18px", marginBottom: "4px" }}>Categorías Configuradas</h2>
-        <p style={{ color: "#6b7280", marginBottom: "16px", fontSize: "14px" }}>
+        <p style={{ color: "var(--text-secondary)", marginBottom: "16px", fontSize: "14px" }}>
           Organiza tus transacciones según su tipo.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "10px" }}>
           {categories.map((cat) => (
             <div
               key={cat.id}
@@ -44,15 +38,15 @@ export default function Categories() {
                 alignItems: "center",
                 gap: "10px",
                 padding: "10px",
-                backgroundColor: "#f9fafb",
+                backgroundColor: "var(--bg-input)",
                 borderRadius: "8px",
-                borderLeft: cat.type === "income" ? "4px solid #10b981" : "4px solid #ef4444",
+                borderLeft: cat.type === "income" ? "4px solid var(--accent-emerald)" : "4px solid var(--accent-rose)",
               }}
             >
               <span style={{ fontSize: "20px" }}>{cat.icon}</span>
               <div>
                 <span style={{ fontSize: "14px", fontWeight: "500", display: "block" }}>{cat.name}</span>
-                <span style={{ fontSize: "11px", color: "#6b7280" }}>
+                <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>
                   {cat.type === "income" ? "Ingreso" : "Gasto"}
                 </span>
               </div>
@@ -61,16 +55,17 @@ export default function Categories() {
         </div>
       </div>
 
-      {/* Formulario para agregar nueva categoría */}
+      {/* Formulario de nueva categoría */}
       <div className="card">
         <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>Crear Categoría Personalizada</h3>
-        <form onSubmit={handleAddCategory}>
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
             className="input-field"
-            placeholder="Nombre de la categoría (ej. Mascotas, Ropa)"
+            placeholder="Nombre de la categoría (ej. Mascotas, Universidad)"
             value={newCatName}
             onChange={(e) => setNewCatName(e.target.value)}
+            required
           />
           <div style={{ display: "flex", gap: "10px" }}>
             <input
