@@ -1,102 +1,136 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { addTransaction } from "../firebase/services";
 
-export default function TransactionForm({ userId, onTransactionAdded }) {
-  const [formData, setFormData] = useState({
-    type: "expense",
-    amount: "",
-    category: "Alimentación",
-    description: "",
-    date: new Date().toISOString().split("T")[0]
-  });
+export default function TransactionForm({ 
+  userId = "invitado_demo", 
+  onTransactionAdded, 
+  categories = [] 
+}) {
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [type, setType] = useState("expense");
+  const [category, setCategory] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Filtrar categorías según el tipo seleccionado (Gasto / Ingreso)
+  const availableCategories = categories.filter((c) => c.type === type);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.amount || formData.amount <= 0) return;
+    if (!description.trim() || !amount) return;
 
-    await addTransaction(userId, formData);
-    
-    // Limpiamos los campos
-    setFormData({
-      type: "expense",
-      amount: "",
-      category: "Alimentación",
-      description: "",
-      date: new Date().toISOString().split("T")[0]
-    });
+    setLoading(true);
 
-    if (onTransactionAdded) onTransactionAdded();
+    // Si no selecciona categoría explícita, toma la primera disponible o "General"
+    const selectedCategory = category || (availableCategories[0]?.name || "General");
+
+    const newTransaction = {
+      userId: userId || "invitado_demo",
+      description: description.trim(),
+      amount: Number(amount),
+      type,
+      category: selectedCategory,
+      date: new Date().toISOString(),
+    };
+
+    try {
+      await addTransaction(newTransaction);
+      setDescription("");
+      setAmount("");
+      setCategory("");
+      if (onTransactionAdded) {
+        await onTransactionAdded();
+      }
+    } catch (error) {
+      console.error("Error al guardar transacción:", error);
+      alert("Error al conectar con la base de datos.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="card">
-      <h3 style={{ marginBottom: "16px" }}>Registrar Movimiento</h3>
+      <h3 style={{ fontSize: "16px", marginBottom: "12px", color: "var(--text-primary)" }}>
+        Registrar Movimiento
+      </h3>
       <form onSubmit={handleSubmit}>
-        
-        {/* Selector de Ingreso o Gasto */}
         <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
           <button
             type="button"
-            className={`btn ${formData.type === "income" ? "btn-income" : "btn-inactive"}`}
-            style={{ flex: 1 }}
-            onClick={() => setFormData({ ...formData, type: "income" })}
+            className="btn"
+            style={{
+              backgroundColor: type === "expense" ? "var(--accent-rose)" : "#374151",
+              color: "white",
+              flex: 1,
+            }}
+            onClick={() => {
+              setType("expense");
+              setCategory("");
+            }}
           >
-            Ingreso
+            💸 Gasto
           </button>
           <button
             type="button"
-            className={`btn ${formData.type === "expense" ? "btn-expense" : "btn-inactive"}`}
-            style={{ flex: 1 }}
-            onClick={() => setFormData({ ...formData, type: "expense" })}
+            className="btn"
+            style={{
+              backgroundColor: type === "income" ? "var(--accent-emerald)" : "#374151",
+              color: type === "income" ? "#022c22" : "white",
+              flex: 1,
+            }}
+            onClick={() => {
+              setType("income");
+              setCategory("");
+            }}
           >
-            Gasto
+            💰 Ingreso
           </button>
         </div>
 
-        {/* Campo de Monto */}
         <input
-          type="number"
-          step="0.01"
-          placeholder="Monto ($)"
-          value={formData.amount}
-          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+          type="text"
           className="input-field"
+          placeholder="Descripción (ej. Mercado, Sueldo, Transporte)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           required
         />
 
-        {/* Categoría */}
-        <select
-          value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+        <input
+          type="number"
           className="input-field"
+          placeholder="Monto ($)"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          required
+        />
+
+        {/* Lista dinámica de categorías */}
+        <select
+          className="input-field"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
         >
-          <option value="Salario">Salario</option>
-          <option value="Alimentación">Alimentación</option>
-          <option value="Transporte">Transporte</option>
-          <option value="Servicios">Servicios</option>
-          <option value="Entretenimiento">Entretenimiento</option>
-          <option value="Otros">Otros</option>
+          <option value="">
+            {availableCategories.length > 0
+              ? "-- Seleccionar Categoría --"
+              : "Sin categorías registradas"}
+          </option>
+          {availableCategories.map((cat) => (
+            <option key={cat.id} value={cat.name}>
+              {cat.icon} {cat.name}
+            </option>
+          ))}
         </select>
 
-        {/* Descripción */}
-        <input
-          type="text"
-          placeholder="Descripción (opcional)"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="input-field"
-        />
-
-        {/* Fecha */}
-        <input
-          type="date"
-          value={formData.date}
-          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-          className="input-field"
-        />
-
-        <button type="submit" className="btn btn-primary">
-          Guardar Transacción
+        <button
+          type="submit"
+          className="btn btn-primary"
+          style={{ marginTop: "8px", width: "100%" }}
+          disabled={loading}
+        >
+          {loading ? "Guardando..." : "Guardar Transacción"}
         </button>
       </form>
     </div>
