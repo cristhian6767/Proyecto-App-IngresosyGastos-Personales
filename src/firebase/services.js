@@ -9,7 +9,6 @@ import {
   doc 
 } from "firebase/firestore";
 
-// Cargar transacciones por usuario
 export const getTransactions = async (userId) => {
   const q = query(collection(db, "transactions"), where("userId", "==", userId));
   const querySnapshot = await getDocs(q);
@@ -20,13 +19,11 @@ export const getTransactions = async (userId) => {
   return transactions;
 };
 
-// Agregar nueva transacción
 export const addTransaction = async (transaction) => {
   const docRef = await addDoc(collection(db, "transactions"), transaction);
   return docRef.id;
 };
 
-// Eliminar transacción
 export const deleteTransaction = async (id) => {
   await deleteDoc(doc(db, "transactions", id));
 };
