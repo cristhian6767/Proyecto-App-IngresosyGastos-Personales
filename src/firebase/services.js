@@ -1,29 +1,43 @@
-import { app, db } from "./config";
 import { 
   collection, 
   addDoc, 
   getDocs, 
+  deleteDoc, 
+  doc, 
   query, 
   where, 
-  deleteDoc, 
-  doc 
+  serverTimestamp 
 } from "firebase/firestore";
+import { db } from "./config";
 
-export const getTransactions = async (userId) => {
-  const q = query(collection(db, "transactions"), where("userId", "==", userId));
-  const querySnapshot = await getDocs(q);
-  const transactions = [];
-  querySnapshot.forEach((docSnap) => {
-    transactions.push({ id: docSnap.id, ...docSnap.data() });
+const COLECCION = "transactions";
+
+// 1. Guardar un nuevo ingreso o gasto
+export const addTransaction = async (userId, transaction) => {
+  return await addDoc(collection(db, COLECCION), {
+    ...transaction,
+    userId,
+    amount: parseFloat(transaction.amount),
+    createdAt: serverTimestamp()
   });
-  return transactions;
 };
 
-export const addTransaction = async (transaction) => {
-  const docRef = await addDoc(collection(db, "transactions"), transaction);
-  return docRef.id;
+// 2. Obtener los registros del usuario y ordenarlos localmente
+export const getTransactions = async (userId) => {
+  const q = query(
+    collection(db, COLECCION),
+    where("userId", "==", userId)
+  );
+
+  const snapshot = await getDocs(q);
+  const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+  // Ordena por fecha de la más reciente a la más antigua
+  return data.sort((a, b) => new Date(b.date) - new Date(a.date));
 };
 
+// 3. Borrar un registro por su ID
 export const deleteTransaction = async (id) => {
-  await deleteDoc(doc(db, "transactions", id));
+  const docRef = doc(db, COLECCION, id);
+  await deleteDoc(docRef);
 };
