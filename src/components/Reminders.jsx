@@ -32,6 +32,10 @@ export default function Reminders() {
     setDate("");
   };
 
+  const handleDeleteReminder = (id) => {
+    setReminders(reminders.filter((r) => r.id !== id));
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card">
@@ -41,22 +45,44 @@ export default function Reminders() {
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {reminders.map((r) => (
-            <div
-              key={r.id}
-              style={{
-                padding: "12px",
-                backgroundColor: "var(--bg-input)",
-                borderRadius: "8px",
-                borderLeft: "4px solid var(--accent-amber)",
-              }}
-            >
-              <span style={{ fontWeight: "600", display: "block" }}>{r.title}</span>
-              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-                Fecha límite: {r.date}
-              </span>
-            </div>
-          ))}
+          {reminders.length === 0 ? (
+            <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>No hay recordatorios pendientes.</p>
+          ) : (
+            reminders.map((r) => (
+              <div
+                key={r.id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "12px",
+                  backgroundColor: "var(--bg-input)",
+                  borderRadius: "8px",
+                  borderLeft: "4px solid var(--accent-amber)",
+                }}
+              >
+                <div>
+                  <span style={{ fontWeight: "600", display: "block" }}>{r.title}</span>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                    Fecha límite: {r.date}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteReminder(r.id)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--accent-rose)",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                  }}
+                  title="Eliminar"
+                >
+                  🗑️
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
