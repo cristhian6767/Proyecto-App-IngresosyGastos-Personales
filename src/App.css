@@ -182,3 +182,9 @@
     border-right-color: var(--border);
   }
 }
+/* Color de texto en negro para el selector de categorías */
+select.input-field,
+select.input-field option {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
